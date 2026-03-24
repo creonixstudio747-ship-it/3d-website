@@ -9,7 +9,7 @@ interface ProductBottleScrollProps {
   product: Product;
 }
 
-const FRAME_COUNT = 120;
+const FRAME_COUNT = 192;
 
 export function ProductBottleScroll({ product }: ProductBottleScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,7 +30,7 @@ export function ProductBottleScroll({ product }: ProductBottleScrollProps) {
 
     for (let i = 1; i <= FRAME_COUNT; i++) {
       const img = new Image();
-      img.src = `${product.folderPath}/${i}.webp`;
+      img.src = `${product.folderPath}/${i}.jpg`;
       img.onload = () => {
         loadedCount++;
         if (isMounted) setImagesLoaded(loadedCount);
