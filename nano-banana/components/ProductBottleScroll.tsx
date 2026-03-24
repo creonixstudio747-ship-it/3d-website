@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { useScroll, motion, MotionValue } from "framer-motion";
+import { useScroll } from "framer-motion";
 import { Product } from "../data/products";
 import { ProductTextOverlays } from "./ProductTextOverlays";
 
@@ -47,7 +47,8 @@ export function ProductBottleScroll({ product }: ProductBottleScrollProps) {
 
   // Draw canvas frame based on scroll
   useEffect(() => {
-    if (images.length === 0 || imagesLoaded < FRAME_COUNT * 0.2) return; // Wait for at least 20% to start showing
+    // Return early if not enough images are loaded yet
+    if (images.length === 0 || imagesLoaded < Math.min(FRAME_COUNT, 20)) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -58,16 +59,15 @@ export function ProductBottleScroll({ product }: ProductBottleScrollProps) {
 
     const render = () => {
       const progress = scrollYProgress.get();
-      // Map progress (0 to 1) to frame index (0 to 119)
+      // Map progress (0 to 1) to frame index (0 to 191)
       const frameIndex = Math.min(
         FRAME_COUNT - 1,
         Math.max(0, Math.floor(progress * FRAME_COUNT))
       );
 
-      const img = images[frameIndex];
-      // Only draw if image is loaded, else use nearest available
+      const img = images[frameIndex] || images[0]; // fallback to first image if current isn't ready
+      // Only draw if image is loaded
       if (img && img.complete) {
-        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // "contain" sizing logic
@@ -86,7 +86,7 @@ export function ProductBottleScroll({ product }: ProductBottleScrollProps) {
       }
     };
 
-    // Initial render
+    // Initial render when images hit threshold
     render();
 
     // Subscribe to scroll changes
